@@ -17,11 +17,13 @@ import (
 	"github.com/metacubex/http"
 )
 
-// When name is composed of a partial escape string, Golang does not unescape it
+// chi 在 RawPath 为空时已用解码后的 Path 匹配，只有原始路径参数需要解码。
 func getEscapeParam(r *http.Request, paramName string) string {
 	param := chi.URLParam(r, paramName)
-	if newParam, err := url.PathUnescape(param); err == nil {
-		param = newParam
+	if r.URL.RawPath != "" {
+		if newParam, err := url.PathUnescape(param); err == nil {
+			param = newParam
+		}
 	}
 	return param
 }
